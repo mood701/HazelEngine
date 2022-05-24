@@ -7,6 +7,7 @@ workspace "Hazel"
         "Release",
         "Dist"
     }
+    startproject "SandBox"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -16,14 +17,19 @@ IncludeDir["GLFW"] = "Hazel/vendor/GLFW/include"
 IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
 IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 
-include "Hazel/vendor/GLFW"
-include "Hazel/vendor/Glad"
-include "Hazel/vendor/imgui"
+group "Dependencies"
+	include "Hazel/vendor/GLFW"
+	include "Hazel/vendor/Glad"
+	include "Hazel/vendor/imgui"
+
+group ""
+
 
 project "Hazel"
     location "Hazel"
     kind "SharedLib"
     language "C++"
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -56,7 +62,6 @@ project "Hazel"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         defines
@@ -68,28 +73,29 @@ project "Hazel"
 
         postbuildcommands
         {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/SandBox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
         }
     
     filter "configurations:Debug"
         defines "HZ_DEBUG"
-        buildoptions "/MDd"
+		runtime "Debug"
         symbols "On"
     
     filter "configurations:Release"
         defines "HZ_RELEASE"
-        buildoptions "/MD"
+		runtime "Release"
         optimize "On"
     
     filter "configurations:Dist"
         defines "HZ_DIST"
-        buildoptions "/MD"
+		runtime "Release"
         symbols "On"
 
 project "SandBox"
     location "SandBox"
     kind "ConsoleApp"
     language "C++"
+    staticruntime "off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -114,7 +120,6 @@ project "SandBox"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         defines
@@ -124,16 +129,16 @@ project "SandBox"
     
     filter "configurations:Debug"
         defines "HZ_DEBUG"
-        buildoptions "/MDd"
+		runtime "Debug"
         symbols "On"
     
     filter "configurations:Release"
         defines "HZ_RELEASE"
-        buildoptions "/MD"
+		runtime "Release"
         optimize "On"
     
     filter "configurations:Dist"
         defines "HZ_DIST"
-        buildoptions "/MD"
+		runtime "Release"
         symbols "On"
     
